@@ -8,13 +8,26 @@ import company.reports.Report;
 import company.reports.ReportList;
 import company.tasks.Task;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import java.util.function.Predicate;
 
+@Entity
 public class TeamManager extends AbstractEmployee implements Manager {
 
+    @OneToOne(cascade = CascadeType.ALL)
     private final EmployeeList list;
     private final int capacity;
+    @OneToOne(cascade = CascadeType.ALL)
     private final PredicateInfo conditionInfo;
+
+    public TeamManager() {
+        super();
+        list = null;
+        capacity = 0;
+        conditionInfo = null;
+    }
 
     public TeamManager(ManagerBuilder builder) {
         super(builder);
@@ -40,19 +53,19 @@ public class TeamManager extends AbstractEmployee implements Manager {
     }
 
     @Override
-    public void hire(Employee employee) {
+    public void hire(AbstractEmployee employee) {
         if(canHire(employee)) {
             list.addEmployee(employee);
         }
     }
 
     @Override
-    public void fire(Employee employee) {
+    public void fire(AbstractEmployee employee) {
         list.removeEmployee(employee);
     }
 
     @Override
-    public boolean canHire(Employee employee) {
+    public boolean canHire(AbstractEmployee employee) {
         return (list.getSize() < capacity) && (makePredicate().test(employee));
     }
 

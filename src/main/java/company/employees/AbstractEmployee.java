@@ -3,18 +3,47 @@ package company.employees;
 import company.employees.details.*;
 import company.tasks.TaskList;
 
+import javax.persistence.*;
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class AbstractEmployee implements Employee {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @OneToOne(cascade = CascadeType.ALL)
     private final EmployeeType type;
+    @OneToOne(cascade = CascadeType.ALL)
     private final EmployeeRole role;
+    @OneToOne(cascade = CascadeType.ALL)
     private final FirstName firstName;
+    @OneToOne(cascade = CascadeType.ALL)
     private final LastName lastName;
+    @OneToOne(cascade = CascadeType.ALL)
     private final University university;
+    @OneToOne(cascade = CascadeType.ALL)
     private final Gender gender;
+    @OneToOne(cascade = CascadeType.ALL)
     private final Country country;
+    @OneToOne(cascade = CascadeType.ALL)
     private final Email email;
     private int unitsOfWork;
+    @OneToOne(cascade = CascadeType.ALL)
     private final TaskList taskList;
+
+    public AbstractEmployee() {
+        type = null;
+        role = null;
+        firstName = null;
+        lastName = null;
+        university = null;
+        gender = null;
+        country = null;
+        email = null;
+        taskList = null;
+    }
 
     public AbstractEmployee(Builder builder) {
         this.type = builder.type;

@@ -1,10 +1,17 @@
 package company.tasks;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class TaskList {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @OneToMany(cascade = CascadeType.ALL)
     private final List<Task> listOfTasks;
 
     public TaskList() {

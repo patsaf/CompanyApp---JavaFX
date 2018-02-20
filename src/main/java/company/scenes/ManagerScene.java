@@ -14,6 +14,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.hibernate.SessionFactory;
 
 public class ManagerScene extends Application {
 
@@ -33,10 +34,7 @@ public class ManagerScene extends Application {
     private VBox layout;
     private ManagerListScene managerList;
     private DeveloperListScene developerList;
-
-    public static void main(String[] args) {
-        launch(args);
-    }
+    private SessionFactory sessionFactory;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -48,7 +46,7 @@ public class ManagerScene extends Application {
         setupAssign();
 
         back.setOnAction(e -> {
-            managerList = new ManagerListScene(ceo);
+            managerList = new ManagerListScene(ceo, sessionFactory);
             try {
                 managerList.start(primaryStage);
             } catch (Exception e1) {
@@ -63,7 +61,7 @@ public class ManagerScene extends Application {
         });
 
         showTeam.setOnAction(e -> {
-            developerList = new DeveloperListScene(ceo, index);
+            developerList = new DeveloperListScene(ceo, index, sessionFactory);
             try {
                 developerList.start(primaryStage);
             } catch (Exception e1) {
@@ -76,8 +74,9 @@ public class ManagerScene extends Application {
         primaryStage.show();
     }
 
-    public ManagerScene(TeamManager ceo, int index) {
+    public ManagerScene(TeamManager ceo, int index, SessionFactory sessionFactory) {
         this.ceo = ceo;
+        this.sessionFactory = sessionFactory;
         this.index = index;
         manager = (TeamManager) ceo.getListEmployee(index);
     }

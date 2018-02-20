@@ -1,5 +1,6 @@
 package company;
 
+import com.fasterxml.classmate.AnnotationConfiguration;
 import company.managers.TeamManager;
 import company.scenes.CeoScene;
 import company.windows.AlertBox;
@@ -13,6 +14,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.Service;
+import org.hibernate.service.ServiceRegistry;
 
 public class MainClass extends Application {
 
@@ -20,6 +28,7 @@ public class MainClass extends Application {
     private Button exit;
     private TeamManager ceo;
     private CeoScene ceoScene;
+    private SessionFactory sessionFactory;
 
     public static void main(String[] args) {
         launch(args);
@@ -27,6 +36,14 @@ public class MainClass extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        try {
+            sessionFactory = new Configuration()
+                    .configure()
+                    .buildSessionFactory();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
 
         primaryStage.setTitle("Welcome to your company!");
 
@@ -38,7 +55,7 @@ public class MainClass extends Application {
 
         setup.setOnAction(e -> {
             ceo = SetupCompany.display();
-            ceoScene = new CeoScene(ceo);
+            ceoScene = new CeoScene(ceo, sessionFactory);
             try {
                 ceoScene.start(primaryStage);
             } catch (Exception e1) {

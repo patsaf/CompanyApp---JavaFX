@@ -1,6 +1,7 @@
 package company.scenes;
 
 import company.Display;
+import company.employees.details.FirstName;
 import company.windows.*;
 import company.managers.TeamManager;
 import javafx.application.Application;
@@ -14,6 +15,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
 
 public class CeoScene extends Application{
 
@@ -28,10 +35,12 @@ public class CeoScene extends Application{
     private Button showTeam;
     private Button exit;
     private Button startOver;
+    private Button save;
     private final Display display = new Display();
     private VBox layout;
     private ManagerListScene managerList;
     private CeoScene ceoScene;
+    private SessionFactory sessionFactory;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -42,9 +51,10 @@ public class CeoScene extends Application{
         setupFire();
         setupAssign();
         setupReport();
+        setupSave();
 
         showTeam.setOnAction(e -> {
-            managerList = new ManagerListScene(ceo);
+            managerList = new ManagerListScene(ceo, sessionFactory);
             try {
                 managerList.start(primaryStage);
             } catch (Exception e1) {
@@ -54,7 +64,7 @@ public class CeoScene extends Application{
 
         startOver.setOnAction(e -> {
             ceo = SetupCompany.display();
-            ceoScene = new CeoScene(ceo);
+            ceoScene = new CeoScene(ceo, sessionFactory);
             try {
                 ceoScene.start(primaryStage);
             } catch (Exception e1) {
@@ -73,8 +83,9 @@ public class CeoScene extends Application{
         primaryStage.show();
     }
 
-    public CeoScene(TeamManager ceo) {
+    public CeoScene(TeamManager ceo, SessionFactory sessionFactory) {
         this.ceo = ceo;
+        this.sessionFactory = sessionFactory;
     }
 
     private void setupLayout() {
@@ -102,13 +113,16 @@ public class CeoScene extends Application{
         showTeam = new Button("Show CEO team");
         exit = new Button("Exit");
         startOver = new Button("Start again");
+        save = new Button("Save");
 
         HBox bottomButtons = new HBox(10);
         bottomButtons.setPadding(new Insets(10,10,10,10));
         bottomButtons.setAlignment(Pos.BASELINE_CENTER);
         Region r = new Region();
         HBox.setHgrow(r, Priority.ALWAYS);
-        bottomButtons.getChildren().addAll(startOver, r, exit);
+        Region r1 = new Region();
+        HBox.setHgrow(r1, Priority.ALWAYS);
+        bottomButtons.getChildren().addAll(startOver, r, save, r1, exit);
         layout.getChildren().addAll(displayCeo, displayCeoDetails, buttons, showTeam, bottomButtons);
     }
 
@@ -148,6 +162,25 @@ public class CeoScene extends Application{
                 ReportWindow.display(ceo);
             } else {
                 AlertBox.display("Your team is empty!");
+            }
+        });
+    }
+
+    private void setupSave() {
+        save.setOnAction(e -> {
+            Session session = sessionFactory.openSession();
+            Transaction tx = null;
+            try {
+                tx = session.beginTransaction();
+                session.save(ceo);
+                tx.commit();
+            } catch (HibernateException he) {
+                if(tx!=null) {
+                    tx.rollback();
+                    he.printStackTrace();
+                }
+            } finally {
+                session.close();
             }
         });
     }

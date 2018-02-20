@@ -1,13 +1,20 @@
 package company.employees;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+@Entity
 public class EmployeeList {
 
-    private final List<Employee> list;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private final List<AbstractEmployee> list;
 
     public EmployeeList() {
         list = new ArrayList<>();
@@ -21,7 +28,7 @@ public class EmployeeList {
 
     public Employee getEmployee(int i) { return list.get(i); }
 
-    public void addEmployee(Employee employee) {
+    public void addEmployee(AbstractEmployee employee) {
         list.add(employee);
     }
 

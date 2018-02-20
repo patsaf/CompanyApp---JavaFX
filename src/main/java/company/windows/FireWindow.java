@@ -68,10 +68,12 @@ public class FireWindow {
                 int i = list.indexOf(employeeList.getValue());
                 if(index!=-1) {
                     developer = (Developer) manager.getListEmployee(i-1);
-                    manager.fire(manager.getListEmployee(i-1));
+                    manager.fire(developer);
+                    //manager.fire(manager.getListEmployee(i-1));
                 } else {
                     manager = (TeamManager) ceo.getListEmployee(i-1);
-                    ceo.fire(ceo.getListEmployee(i - 1));
+                    ceo.fire(manager);
+                    //ceo.fire(ceo.getListEmployee(i - 1));
                 }
                 undo.setVisible(true);
                 setListAdapter();

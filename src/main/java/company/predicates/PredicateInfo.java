@@ -1,12 +1,25 @@
 package company.predicates;
 
+import javax.persistence.*;
+
 /**
  * This class is needed for GUI purposes
  */
+@Entity
 public class PredicateInfo {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @OneToOne(cascade = CascadeType.ALL)
     private final Predicates condition;
     private final String conditionDetails;
+
+    public PredicateInfo() {
+        condition = null;
+        conditionDetails = null;
+    }
 
     public PredicateInfo(Predicates condition, String conditionDetails) {
         this.condition = condition;

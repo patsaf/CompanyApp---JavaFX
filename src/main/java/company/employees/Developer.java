@@ -5,12 +5,17 @@ import company.employees.details.EmployeeType;
 import company.reports.Report;
 import company.tasks.Task;
 
+import javax.persistence.Entity;
+
+@Entity
 public class Developer extends AbstractEmployee implements Employee {
 
 
     public Developer(DeveloperBuilder builder) {
         super(builder);
     }
+
+    public Developer() { super(); }
 
     @Override
     public void assign(Task task, Employee employee){
