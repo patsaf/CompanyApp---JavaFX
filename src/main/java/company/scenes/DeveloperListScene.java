@@ -33,10 +33,6 @@ public class DeveloperListScene extends Application {
     private ManagerScene managerScene;
     private Button exit;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     public DeveloperListScene(TeamManager ceo, int index) {
         this.ceo = ceo;
         this.index = index;
