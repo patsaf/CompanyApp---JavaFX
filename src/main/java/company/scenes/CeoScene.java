@@ -35,7 +35,6 @@ public class CeoScene extends Application{
     private Button showTeam;
     private Button exit;
     private Button startOver;
-    private Button save;
     private final Display display = new Display();
     private VBox layout;
     private ManagerListScene managerList;
@@ -51,7 +50,6 @@ public class CeoScene extends Application{
         setupFire();
         setupAssign();
         setupReport();
-        setupSave();
 
         showTeam.setOnAction(e -> {
             managerList = new ManagerListScene(ceo, sessionFactory);
@@ -73,7 +71,7 @@ public class CeoScene extends Application{
         });
 
         exit.setOnAction(e -> {
-            if(ConfirmExit.display()) {
+            if(ConfirmExit.display(sessionFactory, ceo)) {
                 primaryStage.close();
             }
         });
@@ -113,16 +111,13 @@ public class CeoScene extends Application{
         showTeam = new Button("Show CEO team");
         exit = new Button("Exit");
         startOver = new Button("Start again");
-        save = new Button("Save");
 
         HBox bottomButtons = new HBox(10);
         bottomButtons.setPadding(new Insets(10,10,10,10));
         bottomButtons.setAlignment(Pos.BASELINE_CENTER);
         Region r = new Region();
         HBox.setHgrow(r, Priority.ALWAYS);
-        Region r1 = new Region();
-        HBox.setHgrow(r1, Priority.ALWAYS);
-        bottomButtons.getChildren().addAll(startOver, r, save, r1, exit);
+        bottomButtons.getChildren().addAll(startOver, r, exit);
         layout.getChildren().addAll(displayCeo, displayCeoDetails, buttons, showTeam, bottomButtons);
     }
 
@@ -162,25 +157,6 @@ public class CeoScene extends Application{
                 ReportWindow.display(ceo);
             } else {
                 AlertBox.display("Your team is empty!");
-            }
-        });
-    }
-
-    private void setupSave() {
-        save.setOnAction(e -> {
-            Session session = sessionFactory.openSession();
-            Transaction tx = null;
-            try {
-                tx = session.beginTransaction();
-                session.save(ceo);
-                tx.commit();
-            } catch (HibernateException he) {
-                if(tx!=null) {
-                    tx.rollback();
-                    he.printStackTrace();
-                }
-            } finally {
-                session.close();
             }
         });
     }

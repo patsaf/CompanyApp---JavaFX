@@ -2,9 +2,6 @@ package company.predicates;
 
 import javax.persistence.*;
 
-/**
- * This class is needed for GUI purposes
- */
 @Entity
 public class PredicateInfo {
 
@@ -12,31 +9,40 @@ public class PredicateInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private final Predicates condition;
     private final String conditionDetails;
 
+    @Enumerated(EnumType.STRING)
+    private final Predicates conditionName;
+
     public PredicateInfo() {
-        condition = null;
+        conditionName = null;
         conditionDetails = null;
     }
 
-    public PredicateInfo(Predicates condition, String conditionDetails) {
-        this.condition = condition;
+    public PredicateInfo(Predicates conditionName, String conditionDetails) {
         this.conditionDetails = conditionDetails;
+        this.conditionName = conditionName;
     }
 
-    public Predicates getCondition() {
-        return condition;
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getConditionDetails() {
         return conditionDetails;
     }
 
+    public Predicates getConditionName() {
+        return conditionName;
+    }
+
     public String toString() {
         String output = "";
-        switch(condition) {
+        switch(conditionName) {
             case EMAIL:
                 output = "This manager employs developers only with " + conditionDetails + " email domain";
                 break;

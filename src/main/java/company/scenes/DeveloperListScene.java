@@ -58,7 +58,7 @@ public class DeveloperListScene extends Application {
         });
 
         exit.setOnAction( e -> {
-            if(ConfirmExit.display()) {
+            if(ConfirmExit.display(sessionFactory, ceo)) {
                 primaryStage.close();
             }
         });

@@ -13,6 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import java.util.function.Predicate;
 
+import static company.predicates.Predicates.EMPTY;
+
 @Entity
 public class TeamManager extends AbstractEmployee implements Manager {
 
@@ -89,7 +91,7 @@ public class TeamManager extends AbstractEmployee implements Manager {
     }
 
     public Predicate<Employee> makePredicate(){
-        switch(conditionInfo.getCondition()) {
+        switch(conditionInfo.getConditionName()) {
 
             case EMPTY:
                 return PredicateFactory.noCondition();

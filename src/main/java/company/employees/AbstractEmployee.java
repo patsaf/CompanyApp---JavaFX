@@ -13,9 +13,9 @@ public abstract class AbstractEmployee implements Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @Enumerated(EnumType.STRING)
     private final EmployeeType type;
-    @OneToOne(cascade = CascadeType.ALL)
+    @Enumerated(EnumType.STRING)
     private final EmployeeRole role;
     @OneToOne(cascade = CascadeType.ALL)
     private final FirstName firstName;
@@ -23,7 +23,7 @@ public abstract class AbstractEmployee implements Employee {
     private final LastName lastName;
     @OneToOne(cascade = CascadeType.ALL)
     private final University university;
-    @OneToOne(cascade = CascadeType.ALL)
+    @Enumerated(EnumType.STRING)
     private final Gender gender;
     @OneToOne(cascade = CascadeType.ALL)
     private final Country country;

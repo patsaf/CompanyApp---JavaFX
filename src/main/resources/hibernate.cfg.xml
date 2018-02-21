@@ -13,7 +13,7 @@
         </property>
 
         <property name = "hibernate.connection.url">
-            jdbc:mysql://localhost:3308/company_base?useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC        </property>
+            jdbc:mysql://localhost:3308/company_base?&amp;useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC        </property>
 
         <property name = "hibernate.connection.username">
             user
@@ -27,13 +27,12 @@
             create
         </property>
 
+        <property name = "hibernate.show_sql">true</property>
+
         <!-- List of XML mapping files -->
         <mapping class="company.employees.details.FirstName"/>
         <mapping class="company.employees.details.Country"/>
         <mapping class="company.employees.details.Email"/>
-        <mapping class="company.employees.details.EmployeeRole"/>
-        <mapping class="company.employees.details.EmployeeType"/>
-        <mapping class="company.employees.details.Gender"/>
         <mapping class="company.employees.details.LastName"/>
         <mapping class="company.employees.details.University"/>
         <mapping class="company.employees.AbstractEmployee"/>
@@ -42,7 +41,6 @@
         <mapping class="company.predicates.PredicateInfo"/>
         <mapping class="company.tasks.Task"/>
         <mapping class="company.tasks.TaskList"/>
-        <mapping class="company.predicates.Predicates"/>
         <mapping class="company.employees.Developer"/>
     </session-factory>
 </hibernate-configuration>

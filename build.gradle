@@ -17,11 +17,8 @@ repositories {
 
 dependencies {
     compile 'com.google.guava:guava:23.5-jre'
-    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
-// https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.2.12.Final'
-
 }
 
 dependencies {
