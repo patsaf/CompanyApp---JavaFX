@@ -1,5 +1,6 @@
 package company.windows;
 
+import company.employees.AbstractEmployee;
 import company.employees.EmployeeFactory;
 import company.employees.details.*;
 import company.managers.TeamManager;
@@ -16,6 +17,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import java.util.Random;
 
@@ -54,7 +59,7 @@ public class SetupCompany {
     private static Label capacityLabel;
     private static TextField capacity;
 
-    public static TeamManager display() {
+    public static TeamManager display(Session session) {
 
         window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -63,9 +68,9 @@ public class SetupCompany {
         setupLayout();
         setupForm();
         setupGenerateRandom();
-        setupHire();
+        setupHire(session);
 
-        cancel.setOnAction( e -> window.close() );
+        cancel.setOnAction(e -> window.close());
 
         Scene scene = new Scene(border, 350, 400);
         window.setScene(scene);
@@ -76,7 +81,7 @@ public class SetupCompany {
 
     private static void setupLayout() {
         border = new BorderPane();
-        border.setPadding(new Insets(10,10,10,10));
+        border.setPadding(new Insets(10, 10, 10, 10));
 
         StackPane top = new StackPane();
         Label title = new Label("Fill your CEO details");
@@ -116,7 +121,7 @@ public class SetupCompany {
         GridPane form = new GridPane();
         form.setHgap(10);
         form.setVgap(10);
-        form.setPadding(new Insets(10,10,10,10));
+        form.setPadding(new Insets(10, 10, 10, 10));
         conditionDetailLabel = new Label("Insert condition:");
         conditionDetailSpinner = new ChoiceBox<>();
         conditionDetailSpinner.getItems().addAll(genders);
@@ -165,7 +170,7 @@ public class SetupCompany {
 
     private static void setupForm() {
         gender.setOnAction(e -> {
-            if(gender.getValue().equals(genders[0])) {
+            if (gender.getValue().equals(genders[0])) {
                 genderItem = Gender.FEMALE;
             } else {
                 genderItem = Gender.MALE;
@@ -173,14 +178,14 @@ public class SetupCompany {
         });
 
         condition.setOnAction(e -> {
-            if(!condition.getValue().equals(conditions[0])) {
+            if (!condition.getValue().equals(conditions[0])) {
                 conditionDetailLabel.setVisible(true);
                 if (condition.getValue().equals("Gender")) {
                     conditionDetailSpinner.setVisible(true);
                     conditionDetail.setVisible(false);
                     predicateItem = Predicates.GENDER;
                     conditionDetailSpinner.setOnAction(event -> {
-                        if(conditionDetailSpinner.getValue().equals(genders[0])) {
+                        if (conditionDetailSpinner.getValue().equals(genders[0])) {
                             genderConditionItem = Gender.FEMALE;
                         } else {
                             genderConditionItem = Gender.MALE;
@@ -189,7 +194,7 @@ public class SetupCompany {
                 } else {
                     conditionDetail.setVisible(true);
                     conditionDetailSpinner.setVisible(false);
-                    if(condition.getValue().equals("University")) {
+                    if (condition.getValue().equals("University")) {
                         predicateItem = Predicates.UNIVERSITY;
                     } else if (condition.getValue().equals("Country")) {
                         predicateItem = Predicates.COUNTRY;
@@ -214,16 +219,16 @@ public class SetupCompany {
             email.setText(employeeFactory.getEmail());
             university.setText(employeeFactory.getUniversity());
             country.setText(employeeFactory.getCountry());
-            capacity.setText(String.valueOf(r.nextInt(5)+1));
+            capacity.setText(String.valueOf(r.nextInt(5) + 1));
             firstName.setText(gender.getValue().equals(genders[0]) ? employeeFactory.getFemaleName() : employeeFactory.getMaleName());
         });
     }
 
-    private static void setupHire() {
+    private static void setupHire(Session session) {
 
         hire.setOnAction(e -> {
             setTextBlack();
-            if(checkForm()) {
+            if (checkForm()) {
                 try {
                     setUpperCase(firstName);
                     setUpperCase(lastName);
@@ -240,11 +245,21 @@ public class SetupCompany {
                                     (predicateItem == Predicates.GENDER) ?
                                             genderConditionItem.name() : conditionDetail.getText().toString()))
                             .build();
+                    Transaction tx = null;
+                    try {
+                        tx = session.beginTransaction();
+                        clearDatabase(session);
+                        tx.commit();
+                    } catch (HibernateException he) {
+                        tx.rollback();
+                        he.printStackTrace();
+                    }
                     window.close();
                 } catch (IllegalArgumentException iae) {
-                    AlertBox.display("Invalid data!");                }
+                    AlertBox.display("Invalid data!");
                 }
-            });
+            }
+        });
     }
 
     private static void setTextBlack() {
@@ -259,26 +274,32 @@ public class SetupCompany {
 
     private static boolean checkForm() {
         boolean canHire = true;
-        if(firstName.getText().equals("")) {
+        if (firstName.getText().equals("")) {
             firstNameLabel.setStyle("-fx-text-fill: red");
             canHire = false;
-        } if(lastName.getText().equals("")) {
+        }
+        if (lastName.getText().equals("")) {
             lastNameLabel.setStyle("-fx-text-fill: red");
             canHire = false;
-        } if(capacity.getText().equals("")) {
+        }
+        if (capacity.getText().equals("")) {
             capacityLabel.setStyle("-fx-text-fill: red");
             canHire = false;
-        } if(email.getText().equals("")) {
+        }
+        if (email.getText().equals("")) {
             emailLabel.setStyle("-fx-text-fill: red");
             canHire = false;
-        } if(university.getText().equals("")) {
+        }
+        if (university.getText().equals("")) {
             universityLabel.setStyle("-fx-text-fill: red");
             canHire = false;
-        } if(country.getText().equals("")) {
+        }
+        if (country.getText().equals("")) {
             countryLabel.setStyle("-fx-text-fill: red");
             canHire = false;
-        } if(predicateItem!=Predicates.EMPTY && predicateItem!=Predicates.GENDER) {
-            if(conditionDetail.getText().equals("")) {
+        }
+        if (predicateItem != Predicates.EMPTY && predicateItem != Predicates.GENDER) {
+            if (conditionDetail.getText().equals("")) {
                 conditionDetailLabel.setStyle("-fx-text-fill: red");
                 canHire = false;
             }
@@ -292,5 +313,28 @@ public class SetupCompany {
         sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
         content = sb.toString();
         field.setText(content);
+    }
+
+    private static void clearDatabase(Session session) {
+        Query delete = session.createQuery("delete from AbstractEmployee");
+        delete.executeUpdate();
+        delete = session.createQuery("delete from Country");
+        delete.executeUpdate();
+        delete = session.createQuery("delete from Email");
+        delete.executeUpdate();
+        delete = session.createQuery("delete from EmployeeList");
+        delete.executeUpdate();
+        delete = session.createQuery("delete from FirstName");
+        delete.executeUpdate();
+        delete = session.createQuery("delete from LastName");
+        delete.executeUpdate();
+        delete = session.createQuery("delete from PredicateInfo");
+        delete.executeUpdate();
+        delete = session.createQuery("delete from University");
+        delete.executeUpdate();
+        delete = session.createQuery("delete from Task");
+        delete.executeUpdate();
+        delete = session.createQuery("delete from TaskList");
+        delete.executeUpdate();
     }
 }

@@ -1,6 +1,7 @@
 package company.windows;
 
 import company.managers.TeamManager;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,7 +20,7 @@ public class ConfirmExit {
 
     private static boolean answer;
 
-    public static boolean display(SessionFactory sessionFactory, TeamManager ceo) {
+    public static boolean display(SessionFactory sessionFactory, TeamManager ceo, Session session) {
 
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -31,11 +32,12 @@ public class ConfirmExit {
         Button yes = new Button("YES");
         yes.setOnAction(e -> {
             answer = true;
-            Session session = sessionFactory.openSession();
             Transaction tx = null;
             try {
                 tx = session.beginTransaction();
-                session.save(ceo);
+                if(ceo != null) {
+                    session.saveOrUpdate(ceo);
+                }
                 tx.commit();
             } catch (HibernateException he) {
                 if(tx!=null) {
@@ -46,6 +48,7 @@ public class ConfirmExit {
                 session.close();
             }
             window.close();
+            Platform.exit();
         });
 
         Button no = new Button("NO");

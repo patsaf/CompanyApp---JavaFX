@@ -16,6 +16,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 public class ManagerListScene extends Application {
@@ -30,11 +31,13 @@ public class ManagerListScene extends Application {
     private CeoScene ceoScene;
     private final Display display = new Display();
     private ManagerScene managerScene;
+    private Session session;
     private SessionFactory sessionFactory;
 
-    public ManagerListScene(TeamManager ceo, SessionFactory sessionFactory) {
+    public ManagerListScene(TeamManager ceo, SessionFactory sessionFactory, Session session) {
         this.ceo = ceo;
         this.sessionFactory = sessionFactory;
+        this.session = session;
     }
 
     @Override
@@ -44,7 +47,7 @@ public class ManagerListScene extends Application {
         setupLayout();
 
         hideTeam.setOnAction(e -> {
-            ceoScene = new CeoScene(ceo, sessionFactory);
+            ceoScene = new CeoScene(ceo, sessionFactory, session);
             try {
                 ceoScene.start(primaryStage);
             } catch (Exception e1) {
@@ -53,7 +56,7 @@ public class ManagerListScene extends Application {
         });
 
         exit.setOnAction( e -> {
-            if(ConfirmExit.display(sessionFactory, ceo)) {
+            if(ConfirmExit.display(sessionFactory, ceo, session)) {
                 primaryStage.close();
             }
         });
@@ -106,7 +109,7 @@ public class ManagerListScene extends Application {
 
             int index = i;
             managerSettings.setOnAction(e -> {
-                managerScene = new ManagerScene(ceo, index, sessionFactory);
+                managerScene = new ManagerScene(ceo, index, sessionFactory, session);
                 try {
                     managerScene.start(stage);
                 } catch (Exception e1) {

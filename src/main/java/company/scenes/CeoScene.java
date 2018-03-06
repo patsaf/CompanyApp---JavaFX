@@ -22,7 +22,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 
-public class CeoScene extends Application{
+public class CeoScene extends Application {
 
     private Scene scene;
     private TeamManager ceo;
@@ -39,6 +39,7 @@ public class CeoScene extends Application{
     private VBox layout;
     private ManagerListScene managerList;
     private CeoScene ceoScene;
+    private Session session;
     private SessionFactory sessionFactory;
 
     @Override
@@ -52,7 +53,7 @@ public class CeoScene extends Application{
         setupReport();
 
         showTeam.setOnAction(e -> {
-            managerList = new ManagerListScene(ceo, sessionFactory);
+            managerList = new ManagerListScene(ceo, sessionFactory, session);
             try {
                 managerList.start(primaryStage);
             } catch (Exception e1) {
@@ -61,8 +62,8 @@ public class CeoScene extends Application{
         });
 
         startOver.setOnAction(e -> {
-            ceo = SetupCompany.display();
-            ceoScene = new CeoScene(ceo, sessionFactory);
+            ceo = SetupCompany.display(session);
+            ceoScene = new CeoScene(ceo, sessionFactory, session);
             try {
                 ceoScene.start(primaryStage);
             } catch (Exception e1) {
@@ -71,7 +72,7 @@ public class CeoScene extends Application{
         });
 
         exit.setOnAction(e -> {
-            if(ConfirmExit.display(sessionFactory, ceo)) {
+            if (ConfirmExit.display(sessionFactory, ceo, session)) {
                 primaryStage.close();
             }
         });
@@ -81,9 +82,10 @@ public class CeoScene extends Application{
         primaryStage.show();
     }
 
-    public CeoScene(TeamManager ceo, SessionFactory sessionFactory) {
+    public CeoScene(TeamManager ceo, SessionFactory sessionFactory, Session session) {
         this.ceo = ceo;
         this.sessionFactory = sessionFactory;
+        this.session = session;
     }
 
     private void setupLayout() {
@@ -113,7 +115,7 @@ public class CeoScene extends Application{
         startOver = new Button("Start again");
 
         HBox bottomButtons = new HBox(10);
-        bottomButtons.setPadding(new Insets(10,10,10,10));
+        bottomButtons.setPadding(new Insets(10, 10, 10, 10));
         bottomButtons.setAlignment(Pos.BASELINE_CENTER);
         Region r = new Region();
         HBox.setHgrow(r, Priority.ALWAYS);
@@ -123,7 +125,7 @@ public class CeoScene extends Application{
 
     private void setupHire() {
         hire.setOnAction(e -> {
-            if(ceo.getListSize() < ceo.getCapacity()) {
+            if (ceo.getListSize() < ceo.getCapacity()) {
                 ceo = HireManager.display(ceo);
             } else {
                 AlertBox.display("Your team is full!");
@@ -133,7 +135,7 @@ public class CeoScene extends Application{
 
     private void setupFire() {
         fire.setOnAction(e -> {
-            if(ceo.getListSize()!=0) {
+            if (ceo.getListSize() != 0) {
                 ceo = FireWindow.display(ceo, -1);
             } else {
                 AlertBox.display("Your team is empty!");
@@ -143,7 +145,7 @@ public class CeoScene extends Application{
 
     private void setupAssign() {
         assign.setOnAction(e -> {
-            if(ceo.getListSize()!=0) {
+            if (ceo.getListSize() != 0) {
                 ceo = AssignWindow.display(ceo, -1);
             } else {
                 AlertBox.display("Your team is empty!");
@@ -153,7 +155,7 @@ public class CeoScene extends Application{
 
     private void setupReport() {
         report.setOnAction(e -> {
-            if(ceo.getListSize()!=0) {
+            if (ceo.getListSize() != 0) {
                 ReportWindow.display(ceo);
             } else {
                 AlertBox.display("Your team is empty!");

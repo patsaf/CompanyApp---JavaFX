@@ -14,6 +14,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 public class ManagerScene extends Application {
@@ -34,6 +35,7 @@ public class ManagerScene extends Application {
     private VBox layout;
     private ManagerListScene managerList;
     private DeveloperListScene developerList;
+    private Session session;
     private SessionFactory sessionFactory;
 
     @Override
@@ -46,7 +48,7 @@ public class ManagerScene extends Application {
         setupAssign();
 
         back.setOnAction(e -> {
-            managerList = new ManagerListScene(ceo, sessionFactory);
+            managerList = new ManagerListScene(ceo, sessionFactory, session);
             try {
                 managerList.start(primaryStage);
             } catch (Exception e1) {
@@ -55,13 +57,13 @@ public class ManagerScene extends Application {
         });
 
         exit.setOnAction( e -> {
-            if(ConfirmExit.display(sessionFactory, ceo)) {
+            if(ConfirmExit.display(sessionFactory, ceo, session)) {
                 primaryStage.close();
             }
         });
 
         showTeam.setOnAction(e -> {
-            developerList = new DeveloperListScene(ceo, index, sessionFactory);
+            developerList = new DeveloperListScene(ceo, index, sessionFactory, session);
             try {
                 developerList.start(primaryStage);
             } catch (Exception e1) {
@@ -74,10 +76,11 @@ public class ManagerScene extends Application {
         primaryStage.show();
     }
 
-    public ManagerScene(TeamManager ceo, int index, SessionFactory sessionFactory) {
+    public ManagerScene(TeamManager ceo, int index, SessionFactory sessionFactory, Session session) {
         this.ceo = ceo;
         this.sessionFactory = sessionFactory;
         this.index = index;
+        this.session = session;
         manager = (TeamManager) ceo.getListEmployee(index);
     }
 
